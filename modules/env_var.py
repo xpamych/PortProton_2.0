@@ -9,9 +9,15 @@ def print_env_var(var_name):
     else:
         log.warning(f"Переменная {var_name} не определена")
 
-def check_and_set_env_var(var_name, default_value):
+def set_env_var(var_name, default_value):
     if var_name not in os.environ or not os.environ[var_name]:
         os.environ[var_name] = default_value
+
+def get_env_var(var_name):
+    if var_name in os.environ and os.environ[var_name]:
+        return os.environ[var_name]
+    else:
+        log.critical(f"Переменная {var_name} не определена")
 
 def add_to_env_var(var_name, separator, value):
     if var_name not in os.environ:

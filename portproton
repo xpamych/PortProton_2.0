@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+##### CHECK ROOT #####
+if [[ $(id -u) -eq 0 ]] ; then
+    echo "Перезапустите $0 от обычного пользователя!"
+    exit 1
+fi
+
+##### DEFAULT VARIABLES #####
+SCRIPT_NAME="$(basename "$0")"
+if [[ "$(realpath "$0")" == "/usr/bin/$SCRIPT_NAME" ]] ; then
+    WORK_PATH="$HOME/.local/share/$SCRIPT_NAME"
+    DATA_PATH="/usr/share/$SCRIPT_NAME"
+else
+    WORK_PATH="$HOME/test-$SCRIPT_NAME"
+    DATA_PATH="$(dirname "$(realpath "$0")")"
+fi
+export WORK_PATH DATA_PATH
+
+"$DATA_PATH/$SCRIPT_NAME.py" "$@"

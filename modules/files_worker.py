@@ -41,12 +41,13 @@ def try_remove_file(path):
         except Exception as e:
             log.error(f"failed to remove file: {e}")
 
-def create_new_dir(path):
-    if not os.path.exists(path):
-        try:
-            os.makedirs(path)
-        except Exception as e:
-            log.error(f"failed to create directory: {e}")
+def create_new_dir(*path):
+    for i in path:
+        if not os.path.exists(i):
+            try:
+                os.makedirs(i)
+            except Exception as e:
+                log.error(f"failed to create directory: {e}")
 
 def try_force_link_dir(path, link):
     if not os.path.exists(path):

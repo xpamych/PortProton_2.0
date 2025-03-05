@@ -31,10 +31,10 @@ def try_force_link_file(source, link):
 
         os.symlink(source, link)
     except Exception as e:
-        print(f"failed to create link for file: {e}")
+        log.error(f"failed to create link for file: {e}")
 
 
-def try_remove_file(path):
+def try_remove_file(file_path):
     if os.path.exists(file_path) and os.path.isfile(file_path):
         try:
             os.remove(file_path)
@@ -59,10 +59,10 @@ def try_force_link_dir(path, link):
 
         os.symlink(path, link)
     except Exception as e:
-        print(f"failed to create link for file: {e}")
+        log.error(f"failed to create link for file: {e}")
 
 def try_remove_dir(path):
-    if os.path.exist(path) and os.path.isdir(path):
+    if os.path.exists(path) and os.path.isdir(path):
         try:
             shutil.rmtree(path)
         except Exception as e:
@@ -73,7 +73,7 @@ def unpack(archive_path, extract_to=None):
         if extract_to is None:
             # TODO: перенести распаковку по умолчанию в tmp
             extract_to = os.path.dirname(archive_path)
-        elif not os.exists.isdir(extract_to):
+        elif not os.path.isdir(extract_to):
             create_new_dir(extract_to)
 
         with tarfile.open(archive_path, mode="r:*") as tar:

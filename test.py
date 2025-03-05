@@ -6,5 +6,8 @@ from modules.files_worker import *
 from modules.downloader import *
 
 if __name__ == "__main__":
-
+    log.debug("Привет мир!")
     log.info("Привет мир!")
+    log.warning("Привет мир!")
+    log.error("Привет мир!")
+    log.critical("Привет мир!")

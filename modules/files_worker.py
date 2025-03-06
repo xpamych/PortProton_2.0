@@ -62,6 +62,25 @@ def try_force_link_dir(path, link):
     except Exception as e:
         log.error(f"failed to create link for file: {e}")
 
+def replace_file(file_path, file_name): # функция замены файла (сначала запись во временный файл, потом замена)
+    try:
+        if os.path.exists(file_name) and os.path.getsize(file_name) > 0:
+            os.replace(file_name, file_path)  # Меняем местами файлы, если временный файл не пуст
+            log.info(f"Данные успешно обновлены в {file_path}.")
+        else:
+            log.warning(f"Временный файл {file_name} пуст, замена в {file_path} не выполнена.")
+            if os.path.exists(file_name):
+                os.remove(file_name)  # Удаляем пустой временный файл
+    except Exception as e:
+        log.error(f"Ошибка при замене файла: {e}")
+
+def try_write_temp_file(file_path, file_name):  # функция записи в tmp
+    try:
+        with open(file_path, 'w') as file:
+            file.write("\n".join(file_name))  # Записываем все имена файлов во временный файл
+    except Exception as e:
+        log.error(f"Ошибка при записи во временный файл {file_path}: {e}")
+
 def try_remove_dir(path):
     if os.path.exists(path) and os.path.isdir(path):
         try:
@@ -69,7 +88,22 @@ def try_remove_dir(path):
         except Exception as e:
             log.error(f"failed to remove directory: {e}")
 
+def get_last_modified_time(file_path): # функция получения времени последнего изменения файла
+    try:
+        return os.path.getmtime(file_path)
+    except FileNotFoundError:
+        log.warning(f"Файл не найден: {file_path}")
+        return None
+    except Exception as e:
+        log.error(f"Ошибка при получении времени изменения файла {file_path}: {e}")
+        return None
+
+
 def unpack(archive_path, extract_to=None):
+    # Проверяем, существует ли архив
+    if not os.path.isfile(archive_path):
+        log.error(f"Архив {archive_path} не найден.")
+        return False
     try:
         if extract_to is None:
             # TODO: перенести распаковку по умолчанию в tmp
@@ -83,8 +117,15 @@ def unpack(archive_path, extract_to=None):
             log.info(f"Архив {archive_path} успешно распакован в {full_path}")
     except tarfile.TarError as e:
         log.error(f"Ошибка при распаковке архива {archive_path}: {e}")
+        return False
+    except PermissionError:
+        log.error(f"Ошибка доступа к файлу {archive_path}. Убедитесь, что у вас есть права на чтение.")
+        return False
     except Exception as e:
         log.error(f"Неизвестная ошибка: {e}")
+        return False
+
+    return True
 
 def check_hash_sum(check_file, check_sum):
     if check_sum and isinstance(check_sum, str):

@@ -1,28 +1,25 @@
 #!/usr/bin/env python3
 import sys
+import tempfile
 
+from modules.config_parser import *
 from modules.log import *
 from modules.env_var import *
 from modules.files_worker import *
 from modules.downloader import *
-import tempfile
+from modules.init_wine import *
 
-# переменные которые вынесем в отельный файл, аля var
-plugins_ver = "20"
-libs_ver = "52"
-# конец, аля var
+tmp_path = tempfile.gettempdir()
 
 work_path = get_env_var("USER_WORK_PATH")
 
 data_path = work_path + "/data"
-
 dist_path = data_path + "/dist"
-tmp_path = tempfile.gettempdir()
 img_path = data_path + "/img"
 
 vulkan_path = data_path + "/vulkan"
-plugins_path = data_path + "/plugins_v" + plugins_ver
-libs_path = data_path + "/libs_v" + libs_ver
+plugins_path = data_path + "/plugins_v" + var("plugins_ver")
+libs_path = data_path + "/libs_v" + var("libs_ver")
 
 create_new_dir(dist_path, tmp_path, img_path, vulkan_path)
 
@@ -52,3 +49,5 @@ if __name__ == "__main__":
 
     log.info(work_path)
     log.info(sys.argv[1:])
+
+    init_wine(dist_path)

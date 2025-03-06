@@ -2,8 +2,7 @@ import logging
 import sys
 
 class ColoredFormatter(logging.Formatter):
-    # ANSI escape sequences for colors
-    COLORS = {
+    COLORS = {  # ANSI escape sequences for colors
         'DEBUG': '\033[35m',    # Purple
         'INFO': '\033[36m',     # Green
         'WARNING': '\033[33m',   # Yellow
@@ -21,19 +20,33 @@ class ColoredFormatter(logging.Formatter):
             sys.exit(1)
         return formatted_message
 
-# Настраиваем логирование
-log = logging.getLogger()
-# TODO: добавить case с переменной для управление уровнем
-log.setLevel(logging.DEBUG)
 
-# Создаем консольный обработчик
-handler = logging.StreamHandler()
+log = logging.getLogger() # Настраиваем логирование
+def set_logging_level(level_string):
+    levels = {
+        'DEBUG': logging.DEBUG,
+        'INFO': logging.INFO,
+        'WARNING': logging.WARNING,
+        'ERROR': logging.ERROR,
+        'CRITICAL': logging.CRITICAL
+    }
+
+    level = levels.get(level_string, logging.WARNING)  # Уровень по умолчанию
+    if level == logging.WARNING:
+        print(f"Неизвестный уровень логирования: {level_string}. Устанавливается уровень WARNING.")
+    return level
+
+
+log_level_input = 'DEBUG'  # Задаем уровень логирования через функцию
+log.setLevel(set_logging_level(log_level_input))
+
+handler = logging.StreamHandler()  # Создаем консольный обработчик
 handler.setFormatter(ColoredFormatter('%(levelname)s: %(message)s'))
 
-# Создаем файловый обработчик
-# TODO: добавить условие для управления перемееной пути сохранения лога
-file_handler = logging.FileHandler('app.log')
+# TODO: добавить условие для управления переменой пути сохранения лога
+log_file_path = 'app.log'  # Это может быть переменная, установленная пользователем
+file_handler = logging.FileHandler(log_file_path)  # Создаем файловый обработчик
 file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s: %(message)s'))
-log.addHandler(file_handler)
 
+log.addHandler(file_handler)
 log.addHandler(handler)

@@ -1,0 +1,7 @@
+{
+    "plugins_ver" : "20",
+    "libs_ver" : "52",
+    "used_wine" : "PROTON_LG",
+    "default_wine" : "WINE_LG_10-1",
+    "default_proton" : "PROTON_LG_9-19"
+}

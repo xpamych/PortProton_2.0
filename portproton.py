@@ -8,6 +8,7 @@ from modules.env_var import *
 from modules.files_worker import *
 from modules.downloader import *
 from modules.init_wine import *
+from modules.source_fetcher import *
 
 tmp_path = tempfile.gettempdir()
 
@@ -31,7 +32,7 @@ if __name__ == "__main__":
             case "--get-wine": 
                 # без аргументов сохраняем список доступных в tmp_path/get_wine.tmp и выводим в терминал
                 # если есть аргумент (например WINE_LG_10-1) то обновляем и парсим tmp_path/get_wine.tmp с последующим скачиванием
-                get_wine(sys.argv[2:])
+                get_sources(sys.argv[2:], tmp_path, dist_path)
             case "--get-dxvk":
                 # без аргументов сохраняем список доступных в tmp_path/get_dxvk.tmp и выводим в терминал
                 # если есть аргумент (например 2.5.3-31) то обновляем и парсим tmp_path/get_dxvk.tmp с последующим скачиванием

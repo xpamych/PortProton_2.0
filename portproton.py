@@ -10,7 +10,7 @@ from modules.downloader import *
 from modules.init_wine import *
 from modules.source_fetcher import *
 
-tmp_path = tempfile.gettempdir()
+tmp_path = tempfile.gettempdir() + "/portproton"
 
 work_path = get_env_var("USER_WORK_PATH")
 

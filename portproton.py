@@ -5,6 +5,7 @@ from modules.log import *
 from modules.env_var import *
 from modules.files_worker import *
 from modules.downloader import *
+import tempfile
 
 # переменные которые вынесем в отельный файл, аля var
 plugins_ver = "20"
@@ -16,7 +17,7 @@ work_path = get_env_var("USER_WORK_PATH")
 data_path = work_path + "/data"
 
 dist_path = data_path + "/dist"
-tmp_path = data_path + "/tmp"
+tmp_path = tempfile.gettempdir()
 img_path = data_path + "/img"
 
 vulkan_path = data_path + "/vulkan"

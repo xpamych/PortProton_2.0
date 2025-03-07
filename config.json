@@ -1,7 +1,16 @@
 {
-    "plugins_ver" : "20",
-    "libs_ver" : "52",
     "used_wine" : "PROTON_LG",
+
     "default_wine" : "WINE_LG_10-1",
-    "default_proton" : "PROTON_LG_9-19"
+    "default_proton" : "PROTON_LG_9-19",
+
+    "dxvk_git" : "2.5.3-31",
+    "dxvk_stable" : "1.10.3-28",
+    "dxvk_legacy" : "1.6.1",
+
+    "vkd3d_git" : "1.1-4367",
+    "vkd3d_stable" : "1.1-2602",
+
+    "plugins_ver" : "20",
+    "libs_ver" : "52"
 }

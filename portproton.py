@@ -24,6 +24,9 @@ libs_path = data_path + "/libs_v" + var("libs_ver")
 
 create_new_dir(dist_path, tmp_path, img_path, vulkan_path)
 
+log.info(f"рабочий каталог: {work_path}")
+log.info(f"принятые аргументы: {sys.argv[1:]}")
+
 if __name__ == "__main__":
     # TODO: реализовать все функции get_* в модуль downloader.py:
 
@@ -47,8 +50,5 @@ if __name__ == "__main__":
             case "--get-libs":
                 # версия контейнера будет захардкожена, парсить ничего не надо
                 get_libs(libs_ver)
-
-    log.info(work_path)
-    log.info(sys.argv[1:])
 
     init_wine(dist_path)

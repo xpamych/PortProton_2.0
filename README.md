@@ -38,7 +38,7 @@ The **official website of the project** since September 2022 is: https://linux-g
 
 **PLEASE DON'T REPORT BUGS ENCOUNTERED WITH THIS AT WINEHQ OR VALVE SOFTWARE!**
 
-## **Wine sources used in PortWINE:**
+## **Wine sources used in PortProton:**
 
 * WINE-PROTON: https://github.com/ValveSoftware/Proton
 

@@ -3,8 +3,23 @@ import shutil
 import filecmp
 import tarfile
 import hashlib
+import tempfile
 
+from .env_var import *
+from .config_parser import *
 from .log import *
+
+# константы:
+tmp_path = tempfile.gettempdir() + "/portproton"
+work_path = get_env_var("USER_WORK_PATH")
+data_path = work_path + "/data"
+dist_path = data_path + "/dist"
+img_path = data_path + "/img"
+vulkan_path = data_path + "/vulkan"
+plugins_path = data_path + "/plugins_v" + var("plugins_ver")
+libs_path = data_path + "/libs_v" + var("libs_ver")
+
+log.info(f"рабочий каталог: {work_path}")
 
 def try_copy_file(source, destination):  # функция копирования если файлы различаются
     if not os.path.exists(source):
@@ -62,6 +77,21 @@ def try_force_link_dir(path, link):
     except Exception as e:
         log.error(f"failed to create link for file: {e}")
 
+def try_move_dir(src, dst): # Перемещает каталог src в dst, заменяя существующие файлы.
+    for src_dir, dirs, files in os.walk(src):
+        dst_dir = src_dir.replace(src, dst, 1)
+        if not os.path.exists(dst_dir):
+            os.makedirs(dst_dir)
+        for file_ in files:
+            src_file = os.path.join(src_dir, file_)
+            dst_file = os.path.join(dst_dir, file_)
+            if os.path.exists(dst_file):
+                if os.path.samefile(src_file, dst_file):
+                    continue
+                os.remove(dst_file)
+            shutil.move(src_file, dst_dir)
+    try_remove_dir(src)
+
 def replace_file(file_path, file_name): # функция замены файла (сначала запись во временный файл, потом замена)
     try:
         if os.path.exists(file_name) and os.path.getsize(file_name) > 0:
@@ -98,8 +128,6 @@ def get_last_modified_time(file_path, fallback=None):  # Добавьте fallba
         log.error(f"Ошибка при получении времени изменения файла {file_path}: {e}")
         return fallback  # Возврат значения по умолчанию
 
-
-
 def unpack(archive_path, extract_to=None):
     # Проверяем, существует ли архив
     if not os.path.isfile(archive_path):
@@ -107,15 +135,15 @@ def unpack(archive_path, extract_to=None):
         return False
     try:
         if extract_to is None:
-            # TODO: перенести распаковку по умолчанию в tmp
-            extract_to = os.path.dirname(archive_path)
+            extract_to = tmp_path + "/" + os.path.dirname(archive_path)
         elif not os.path.isdir(extract_to):
             create_new_dir(extract_to)
-
+        log.info(f"unpacking file: {archive_path}")
         with tarfile.open(archive_path, mode="r:*") as tar:
             tar.extractall(path=extract_to)
             full_path = os.path.realpath(extract_to)
             log.info(f"Архив {archive_path} успешно распакован в {full_path}")
+
     except tarfile.TarError as e:
         log.error(f"Ошибка при распаковке архива {archive_path}: {e}")
         return False
@@ -129,9 +157,7 @@ def unpack(archive_path, extract_to=None):
     return True
 
 def check_hash_sum(check_file, check_sum):
-    if check_sum and isinstance(check_sum, str):
-        true_hash = check_sum
-    elif os.path.isfile(check_sum):
+    if os.path.isfile(check_sum):
         try:
             with open(check_sum, "r", encoding="utf-8") as file:
                 first_line = file.readline().strip()
@@ -144,6 +170,8 @@ def check_hash_sum(check_file, check_sum):
             log.error(f"Файл {check_sum} не найден.")
         except Exception as e:
             log.error(f"Ошибка при чтении файла: {e}")
+    elif check_sum and isinstance(check_sum, str):
+        true_hash = check_sum
     else:
         log.error(f"Verification sha256sum was failed: {check_file}")
 

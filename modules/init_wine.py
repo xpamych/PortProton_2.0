@@ -6,23 +6,37 @@ from .log import *
 from .env_var import *
 from .files_worker import *
 from .config_parser import *
+from .downloader import *
 
-def init_wine(dist_path):
-    used_wine_upper = var("used_wine").upper()
+def init_wine(wine_version=None):
+    if wine_version is None:
+        used_wine = var("used_wine")
+    else:
+        used_wine = wine_version
 
     # TODO: будем переименовывать все каталоги wine в верхний регистр?
 
-    if used_wine_upper != "SYSTEM":
-        if used_wine_upper == "WINE_LG":
+    if used_wine.upper() != "SYSTEM":
+        if used_wine.upper() == "WINE_LG":
             used_wine = var("default_wine")
-        elif used_wine_upper == "PROTON_LG":
+        elif used_wine.upper() == "PROTON_LG":
             used_wine = var("default_proton")
 
         wine_path = dist_path + "/" + used_wine
 
         if not os.path.exists(wine_path + "/bin/wine"):
-            # TODO: если нет wine то качаем и распаковываем
             log.warning(f"{used_wine} not found. Try download...")
+
+            # TODO: использовать зеркало при необходимости
+            # url_github_lg="https://github.com/Castro-Fidel/wine_builds/releases/download/" + used_wine + "/" + used_wine
+
+            url_cloud_lg="https://cloud.linux-gaming.ru/portproton/" + used_wine
+            
+            if try_download(url_cloud_lg + ".tar.xz") and try_download(url_cloud_lg + ".sha256sum"):
+                if check_hash_sum(tmp_path + "/" + used_wine + ".tar.xz", tmp_path + "/" + used_wine + ".sha256sum"):
+                    unpack(tmp_path + "/" + used_wine + ".tar.xz", dist_path)
+                    for f in [".tar.xz", ".sha256sum"]:
+                        try_remove_file(tmp_path + "/" + used_wine + f)
 
         if not os.path.exists(wine_path + "/bin/wine"):
             log.critical(f"{used_wine} not found. Interrupt!")
@@ -41,12 +55,15 @@ def init_wine(dist_path):
             set_env_var_force("MEDIACONV_BLANK_VIDEO_FILE", wine_share + "/media/blank.mkv")
             set_env_var_force("MEDIACONV_BLANK_AUDIO_FILE", wine_share + "/media/blank.ptna")       
 
-        # TODO: mono, gecko
+        for wine_utils in ["mono", "gecko"]:
+            if not os.path.islink(wine_share + "/wine/" + wine_utils):
+                if os.path.isdir(wine_share + "/wine/" + wine_utils):
+                    try_move_dir(wine_share + "/wine/" + wine_utils, data_path + "/" + wine_utils)
+                try_force_link_dir(data_path + "/" + wine_utils, wine_share + "/wine/" + wine_utils)
 
     else:
         try:
-            result = subprocess.run(['wine', '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                    text=True)
+            result = subprocess.run(['wine', '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             if result.returncode == 0:
                 log.info(f"Используется системная версия WINE: {result.stdout.strip()}")
                 wine_path = "/usr"

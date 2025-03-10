@@ -6,7 +6,6 @@ from modules.files_worker import *
 
 count_wines = 25  # Количество элементов для записи в .tmp файл
 
-
 repos = {  # Список репозиториев для обработки и их короткие имена
     "GloriousEggroll/proton-ge-custom": "proton-ge-custom",
     "GloriousEggroll/wine-ge-custom": "wine-ge-custom",
@@ -19,13 +18,13 @@ mirrors = {
     "https://cloud.linux-gaming.ru": "LG_mirror"
 }
 
-def source_list_checker(tmp_path):
+def source_list_checker():
     for repo, short_name in repos.items():
         output_file = os.path.join(tmp_path, f"{short_name}.tmp")
 
         if not os.path.exists(output_file) or os.path.getsize(output_file) == 0 or \
                 (time.time() - get_last_modified_time(output_file, fallback=0)) >= 10800:
-            source_list_downloader(repo, tmp_path, short_name, output_file)
+            source_list_downloader(repo, short_name, output_file)
         else:
             log.info(f"Файл {output_file} существует и был обновлён менее 3 часов назад. Используем кэшированные данные.")
 
@@ -34,11 +33,11 @@ def source_list_checker(tmp_path):
 
         if not os.path.exists(output_file) or os.path.getsize(output_file) == 0 or \
                 (time.time() - get_last_modified_time(output_file, fallback=0)) >= 10800:
-            source_list_downloader(mirror_url, tmp_path, short_name, output_file, use_github=False)
+            source_list_downloader(mirror_url, short_name, output_file, use_github=False)
         else:
             log.info(f"Файл {output_file} существует и был обновлён менее 3 часов назад. Используем кэшированные данные.")
 
-def source_list_downloader(source, tmp_path, short_name, output_file, use_github=True):
+def source_list_downloader(source, short_name, output_file, use_github=True):
     if use_github:
         url = f"https://api.github.com/repos/{source}/releases?per_page={count_wines}"
     else:
@@ -87,9 +86,9 @@ def source_list_downloader(source, tmp_path, short_name, output_file, use_github
     except requests.exceptions.RequestException as e:
         log.error(f"Ошибка при получении данных из {source}: {str(e)}")
 
-def get_sources(args, tmp_path, dist_path, mirror):
+def get_sources(args, mirror):
     os.makedirs(tmp_path, exist_ok=True)
-    source_list_checker(tmp_path)
+    source_list_checker()
 
     if not args:
         log.critical("Аргументы не предоставлены. Завершение работы.")

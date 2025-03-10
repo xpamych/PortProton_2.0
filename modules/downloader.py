@@ -16,9 +16,9 @@ def try_download(url, save_path=None):
         response = requests.get(url, stream=True)
         response.raise_for_status()  # Проверяем, что запрос успешен
 
-        # Определяем имя файла, если save_path не указан
+        # Определяем имя файла, если save_path не указан, или путь это директория
         if save_path is None:
-            save_path = os.path.basename(url)
+            save_path = tmp_path + "/" + os.path.basename(url)
         elif os.path.isdir(save_path):
             save_path = save_path + "/" + os.path.basename(url)
 
@@ -39,9 +39,12 @@ def try_download(url, save_path=None):
                 progress_bar.update(len(chunk))  # Обновляем прогресс-бар
 
         log.info(f"Файл успешно скачан и сохранён как {save_path}.")
+        return True
     except requests.exceptions.RequestException as e:
         log.error(f"Ошибка при скачивании файла: {e}")
     except Exception as e:
         log.error(f"Неизвестная ошибка: {e}")
     except KeyboardInterrupt as e:
         log.error(f"Прервано пользователем: {e}")
+    
+    return False

@@ -44,37 +44,18 @@ def init_wine(dist_path):
         # TODO: mono, gecko
 
     else:
-        def check_system_wine():
-            # Способ 2: Проверка через переменные окружения в нестандартных путях
-            wine_env_vars = ["WINEPREFIX", "WINEARCH"]
-            found_env_vars = {var: os.getenv(var) for var in wine_env_vars if os.getenv(var)}
-            if found_env_vars:
-                print("Найдены переменные окружения Wine:")
-                for var, value in found_env_vars.items():
-                    print(f"{var}={value}")
+        try:
+            result = subprocess.run(['wine', '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                    text=True)
+            if result.returncode == 0:
+                log.info(f"Используется системная версия WINE: {result.stdout.strip()}")
+                wine_path = "/usr"
             else:
-                print("Переменные окружения Wine не найдены.")
+                log.critical("Произошла ошибка во время получения версии системного WINE.")
+        except FileNotFoundError:
+            log.critical("Команда wine не найдена в системе.")
 
-            # Способ 2: Проверка через which в стандартных путях
-            wine_path_system= shutil.which("wine")
-            if wine_path_system:
-                print(f"Wine найден в PATH: {wine_path_system}")
-            else:
-                print("Wine не найден в PATH.")
-
-            # Способ 3: Проверка через запуск wine --version
-            try:
-                result = subprocess.run(['wine', '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                        text=True)
-                if result.returncode == 0:
-                    print(f"Установленная версия: {result.stdout.strip()}")
-                else:
-                    print("Wine не установлен или произошла ошибка.")
-            except FileNotFoundError:
-                print("Команда wine не найдена.")
-
-        wine_path = "/usr"
-    
+        
     # общие переменные окружения для любой версии wine
     set_env_var_force("WINE", wine_path + "/bin/wine")
     set_env_var_force("WINELOADER", wine_path + "/bin/wine")

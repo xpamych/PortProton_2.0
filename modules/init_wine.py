@@ -2,7 +2,7 @@ import os
 import shutil
 import subprocess
 
-from .log import *
+from .logger import *
 from .env_var import *
 from .files_worker import *
 from .config_parser import *

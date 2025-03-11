@@ -1,5 +1,5 @@
 import os
-from .log import *
+from .logger import *
 
 # функции обработки переменных LINUX окружения
 def print_env_var(*var_name):
@@ -20,6 +20,8 @@ def set_env_var_force(var_name, value):
 def get_env_var(var_name):
     if var_name in os.environ and os.environ[var_name]:
         return os.environ[var_name]
+    elif var_name == "DEBUG":
+        ...
     else:
         log.critical(f"Переменная {var_name} не определена")
 

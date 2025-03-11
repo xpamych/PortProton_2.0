@@ -22,7 +22,7 @@ class ColoredFormatter(logging.Formatter):
 
 
 log = logging.getLogger() # Настраиваем логирование
-def set_logging_level(level_string):
+def set_logging_level(level_string="INFO"):
     levels = {
         'DEBUG': logging.DEBUG,
         'INFO': logging.INFO,
@@ -36,15 +36,11 @@ def set_logging_level(level_string):
         print(f"Неизвестный уровень логирования: {level_string}. Устанавливается уровень WARNING.")
     return level
 
-
-log_level_input = 'DEBUG'  # Задаем уровень логирования через функцию
-log.setLevel(set_logging_level(log_level_input))
-
 handler = logging.StreamHandler()  # Создаем консольный обработчик
 handler.setFormatter(ColoredFormatter('%(levelname)s: %(message)s'))
 
 # TODO: добавить условие для управления переменой пути сохранения лога
-log_file_path = 'app.log'  # Это может быть переменная, установленная пользователем
+log_file_path = 'portproton.log'  # Это может быть переменная, установленная пользователем
 file_handler = logging.FileHandler(log_file_path)  # Создаем файловый обработчик
 file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s: %(message)s'))
 

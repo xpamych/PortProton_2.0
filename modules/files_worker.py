@@ -7,7 +7,7 @@ import tempfile
 
 from .env_var import *
 from .config_parser import *
-from .log import *
+from .logger import *
 
 # константы:
 tmp_path = tempfile.gettempdir() + "/portproton"
@@ -139,6 +139,8 @@ def unpack(archive_path, extract_to=None):
         elif not os.path.isdir(extract_to):
             create_new_dir(extract_to)
         log.info(f"unpacking file: {archive_path}")
+        
+        # TODO: резерв места
         with tarfile.open(archive_path, mode="r:*") as tar:
             tar.extractall(path=extract_to)
             full_path = os.path.realpath(extract_to)

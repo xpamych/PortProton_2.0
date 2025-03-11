@@ -86,7 +86,7 @@ def source_list_downloader(source, short_name, output_file, use_github=True):
     except requests.exceptions.RequestException as e:
         log.error(f"Ошибка при получении данных из {source}: {str(e)}")
 
-def get_sources(args, mirror):
+def get_sources(args, mirror=True):
     os.makedirs(tmp_path, exist_ok=True)
     source_list_checker()
 

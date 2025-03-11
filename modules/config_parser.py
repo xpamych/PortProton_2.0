@@ -1,5 +1,5 @@
 import json
-from .log import *
+from .logger import *
 from .env_var import *
 
 def var(var_name):

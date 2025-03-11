@@ -1,5 +1,5 @@
-*.log
+*.logger
 modules/__pycache__
 *.idea
-app.log
+app.logger
 .gigaide

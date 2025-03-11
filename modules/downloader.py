@@ -1,7 +1,7 @@
 import os
 import requests
 from tqdm import tqdm
-from .log import *
+from .logger import *
 from .files_worker import *
 
 def try_download(url, save_path=None):
@@ -15,6 +15,10 @@ def try_download(url, save_path=None):
         # Отправляем GET-запрос на скачивание файла
         response = requests.get(url, stream=True)
         response.raise_for_status()  # Проверяем, что запрос успешен
+
+        # TODO: добавить проверку хэш-суммы из ссылки на файл
+        # TODO: резерв места
+        # TODO: проверка и докачка 3 попытки
 
         # Определяем имя файла, если save_path не указан, или путь это директория
         if save_path is None:
